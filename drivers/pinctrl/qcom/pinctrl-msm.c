@@ -881,7 +881,7 @@ int get_resume_wakeup_flag(void)
         return flag;
 }
 
-static void msm_gpio_irq_handler(struct irq_desc *desc)
+static bool msm_gpio_irq_handler(struct irq_desc *desc)
 {
 	struct gpio_chip *gc = irq_desc_get_handler_data(desc);
 	const struct msm_pingroup *g;
@@ -892,6 +892,7 @@ static void msm_gpio_irq_handler(struct irq_desc *desc)
 	u32 val;
 	int i;
        char irq_name[16] = {0};
+	bool ret;
 
 	chained_irq_enter(chip, desc);
 
@@ -905,8 +906,7 @@ static void msm_gpio_irq_handler(struct irq_desc *desc)
 		val = readl(pctrl->regs + g->intr_status_reg);
 		if (val & BIT(g->intr_status_bit)) {
 			irq_pin = irq_find_mapping(gc->irqdomain, i);
-			generic_handle_irq(irq_pin);
-			handled++;
+			handled += generic_handle_irq(irq_pin);
 			/* ++add by lyb@bsp for printk wakeup irqs */
 			if (!!need_show_pinctrl_irq) {
 				need_show_pinctrl_irq = false;
@@ -925,12 +925,13 @@ static void msm_gpio_irq_handler(struct irq_desc *desc)
 			/* -- */
 		}
 	}
-
+	ret = (handled != 0);
 	/* No interrupts were flagged */
 	if (handled == 0)
-		handle_bad_irq(desc);
+		ret = handle_bad_irq(desc);
 
 	chained_irq_exit(chip, desc);
+	return ret;
 }
 
 /*
