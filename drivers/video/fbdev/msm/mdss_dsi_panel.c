@@ -1030,7 +1030,7 @@ backlight level 0-->55 ==> 0-->55
 backlight level 55-->230 ==> 55-->200
 backlight level 230-->255 ==> 200-->255
 *************************************/
-#ifndef CONFIG_CUSTOM_ROM
+#if 0
 static u32 backlight_level_remap(struct mdss_dsi_ctrl_pdata *ctrl, u32 level)
 {
     u32 remap_level = 0;
@@ -1070,7 +1070,7 @@ static void mdss_dsi_panel_bl_ctrl(struct mdss_panel_data *pdata,
 	ctrl_pdata = container_of(pdata, struct mdss_dsi_ctrl_pdata,
 				panel_data);
 
-#ifndef CONFIG_CUSTOM_ROM
+#if 0
     if (ctrl_pdata->high_brightness_panel){
        pr_debug("%s goto backlight level remap\n", __func__);
        bl_level = backlight_level_remap(ctrl_pdata, bl_level);
