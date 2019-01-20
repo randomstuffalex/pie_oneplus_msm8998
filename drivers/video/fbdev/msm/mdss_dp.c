@@ -2116,10 +2116,9 @@ static int mdss_dp_host_deinit(struct mdss_dp_drv_pdata *dp)
 static int mdss_dp_notify_clients(struct mdss_dp_drv_pdata *dp,
 	enum notification_status status)
 {
-	const int irq_comp_timeout = 2000;
 	int ret = 0;
 	bool notify = false;
-	bool connect;
+	bool connect = false;
 
 	pr_debug("beginning notification\n");
 	if (status == dp->hpd_notification_status) {
